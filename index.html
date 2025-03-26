@@ -8,7 +8,7 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: linear-gradient(to bottom, #e1edfb, #0056b3);
+      background: linear-gradient(to bottom, #007bff, #0056b3);
       margin: 0;
       padding: 0;
       display: flex;
@@ -16,19 +16,22 @@
       align-items: center;
       height: 100vh;
       color: white;
-    }
-
-    .logo {
-        width: 100%;
+      box-sizing: border-box;
     }
     .container {
-      background: rgba(0, 0, 0, 0.8);
+      background: rgba(0, 0, 0, 0.6);
       padding: 40px;
       border-radius: 20px;
       backdrop-filter: blur(10px);
       text-align: center;
       width: 90%;
       max-width: 500px;
+      box-sizing: border-box;
+    }
+    .logo {
+      width: 90%;
+      max-width: 400px;
+      margin-bottom: 20px;
     }
     h1 {
       font-size: 36px;
@@ -54,11 +57,31 @@
       font-size: 24px;
       font-weight: bold;
     }
+
+    /* Responsividad */
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 28px;
+      }
+      #weather-icon {
+        width: 80px;
+        height: 80px;
+      }
+      p {
+        font-size: 16px;
+      }
+      #time {
+        font-size: 20px;
+      }
+      .logo {
+        width: 80%;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <img src="logobbm24.png" alt="" class="logo">
+    <img src="logobbm24.png" alt="Logo" class="logo">
     <div id="weather-info" class="widget">
       <img id="weather-icon" src="" alt="Weather Icon" />
       <p id="temperature">Temperatura: -- °C</p>
