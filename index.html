@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clima y Hora en Tijuana</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom, #e1edfb, #0056b3);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: white;
+    }
+
+    .logo {
+        width: 100%;
+    }
+    .container {
+      background: rgba(0, 0, 0, 0.8);
+      padding: 40px;
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      text-align: center;
+      width: 90%;
+      max-width: 500px;
+    }
+    h1 {
+      font-size: 36px;
+      margin-bottom: 20px;
+    }
+    .widget {
+      margin-top: 20px;
+      padding: 20px;
+      border-radius: 15px;
+      background-color: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(5px);
+    }
+    #weather-icon {
+      width: 120px;
+      height: 120px;
+      margin-bottom: 10px;
+    }
+    p {
+      margin: 5px 0;
+      font-size: 18px;
+    }
+    #time {
+      font-size: 24px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="logobbm24.png" alt="" class="logo">
+    <div id="weather-info" class="widget">
+      <img id="weather-icon" src="" alt="Weather Icon" />
+      <p id="temperature">Temperatura: -- °C</p>
+      <p id="condition">Condición: --</p>
+      <p id="humidity">Humedad: --%</p>
+      <p id="wind">Viento: -- km/h</p>
+    </div>
+    <div id="time-info" class="widget">
+      <p id="time">--:--:--</p>
+      <p id="date">--</p>
+    </div>
+  </div>
+
+  <script>
+    const apiKey = 'e17a739fca044ecbb81210441252603'; // Reemplaza con tu API Key de WeatherAPI
+    const city = 'Tijuana';
+
+    async function fetchWeather() {
+      try {
+        const response = await fetch(`https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}&lang=es`);
+        const data = await response.json();
+
+        document.getElementById('temperature').textContent = `Temperatura: ${data.current.temp_c} °C`;
+        document.getElementById('condition').textContent = `Condición: ${data.current.condition.text}`;
+        document.getElementById('humidity').textContent = `Humedad: ${data.current.humidity}%`;
+        document.getElementById('wind').textContent = `Viento: ${data.current.wind_kph} km/h`;
+        document.getElementById('weather-icon').src = data.current.condition.icon;
+      } catch (error) {
+        console.error('Error al obtener el clima:', error);
+      }
+    }
+
+    function updateTime() {
+      const now = new Date();
+      document.getElementById('time').textContent = now.toLocaleTimeString('es-MX', { timeZone: 'America/Tijuana' });
+      document.getElementById('date').textContent = now.toLocaleDateString('es-MX', { timeZone: 'America/Tijuana', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    function updateData() {
+      fetchWeather();
+    }
+
+    setInterval(updateTime, 1000); // Actualiza la hora cada segundo
+    setInterval(updateData, 10000); // Actualiza el clima cada 10 segundos
+    updateData();
+    updateTime();
+  </script>
+</body>
+</html>
