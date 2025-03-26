@@ -207,23 +207,19 @@
 
     // Función para formatear la hora en formato 12 horas
     function formatTime(date) {
-      let hours = date.getHours();
-      const minutes = date.getMinutes();
-      const seconds = date.getSeconds();
-      const ampm = hours >= 12 ? 'PM' : 'AM';
-      
-      hours = hours % 12;
-      hours = hours ? hours : 12;
-      
-      const strHours = hours.toString().padStart(2, '0');
-      const strMinutes = minutes.toString().padStart(2, '0');
-      const strSeconds = seconds.toString().padStart(2, '0');
-      
-      return {
-        time: `${strHours}:${strMinutes}:${strSeconds}`,
+    let hours = date.getHours();
+    const minutes = date.getMinutes();
+    const seconds = date.getSeconds();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    
+    hours = hours % 12;
+    hours = hours ? hours : 12; // Convertir 0 a 12
+    
+    return {
+        time: `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`,
         period: ampm
-      };
-    }
+    };
+}
 
     // Función para formatear la fecha en español
     function formatDate(date) {
@@ -253,23 +249,39 @@
     }
 
     function updateTime() {
+  // Obtener elementos del DOM
   const timeElement = document.getElementById('time');
   const periodElement = document.getElementById('time-period');
   const dateElement = document.getElementById('date');
-  
+
+  // Validar que los elementos existan
   if (!timeElement || !periodElement || !dateElement) {
-    console.error('No se encontraron los elementos del tiempo');
-    return;
+    console.error("ERROR: No se encontraron los elementos del reloj. Verifica los IDs en tu HTML.");
+    return; // Detener la ejecución si no existen
   }
 
+  // Obtener hora de Tijuana
   const now = new Date();
-  const formattedTime = formatTime(now);
-  
-  timeElement.textContent = formattedTime.time;
-  periodElement.textContent = formattedTime.period;
-  dateElement.textContent = formatDate(now);
-}
+  const tijuanaTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Tijuana' }));
 
+  // Formatear hora (12h con AM/PM)
+  let hours = tijuanaTime.getHours();
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12 || 12; // Convertir a formato 12h
+
+  // Actualizar el DOM
+  timeElement.textContent = `${hours.toString().padStart(2, '0')}:${tijuanaTime.getMinutes().toString().padStart(2, '0')}:${tijuanaTime.getSeconds().toString().padStart(2, '0')}`;
+  periodElement.textContent = ampm;
+  
+  // Formatear fecha
+  dateElement.textContent = tijuanaTime.toLocaleDateString('es-MX', {
+    timeZone: 'America/Tijuana',
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+}
     async function fetchWeather() {
       try {
         const response = await fetch(`https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}&lang=es`);
