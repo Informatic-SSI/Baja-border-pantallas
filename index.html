@@ -146,7 +146,7 @@
     </div>
     <div id="time-info" class="widget">
         <p id="time">--:--:--<span id="time-period"></span></p>
-        <p id="date">--</p>
+  <p id="date">--</p>
       </div>
   </div>
 
@@ -249,31 +249,50 @@
     }
 
     function updateTime() {
-  // Obtener elementos del DOM
-  const timeElement = document.getElementById('time');
-  const periodElement = document.getElementById('time-period');
-  const dateElement = document.getElementById('date');
+  // Función segura para obtener elementos
+  const safeGetElement = (id) => {
+    const element = document.getElementById(id);
+    if (!element) {
+      console.error(`CRÍTICO: Elemento con ID '${id}' no existe en el DOM`);
+      // Crea el elemento si no existe (solución de emergencia)
+      if (id === 'time-period') {
+        const span = document.createElement('span');
+        span.id = 'time-period';
+        document.getElementById('time')?.appendChild(span);
+        return span;
+      }
+    }
+    return element;
+  };
 
-  // Validar que los elementos existan
+  // Obtener elementos de forma segura
+  const timeElement = safeGetElement('time');
+  const periodElement = safeGetElement('time-period');
+  const dateElement = safeGetElement('date');
+
+  // Si falta algún elemento crítico, detener ejecución
   if (!timeElement || !periodElement || !dateElement) {
-    console.error("ERROR: No se encontraron los elementos del reloj. Verifica los IDs en tu HTML.");
-    return; // Detener la ejecución si no existen
+    console.error("No se puede mostrar el reloj - elementos faltantes");
+    return;
   }
 
-  // Obtener hora de Tijuana
-  const now = new Date();
-  const tijuanaTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Tijuana' }));
 
-  // Formatear hora (12h con AM/PM)
+  // 3. Resto de la lógica (hora de Tijuana)
+  const now = new Date();
+  const tijuanaTime = new Date(now.toLocaleString('en-US', { 
+    timeZone: 'America/Tijuana' 
+  }));
+
+  // Formatear hora (12h AM/PM)
   let hours = tijuanaTime.getHours();
   const ampm = hours >= 12 ? 'PM' : 'AM';
-  hours = hours % 12 || 12; // Convertir a formato 12h
+  hours = hours % 12 || 12; // Convertir 0 a 12
 
   // Actualizar el DOM
   timeElement.textContent = `${hours.toString().padStart(2, '0')}:${tijuanaTime.getMinutes().toString().padStart(2, '0')}:${tijuanaTime.getSeconds().toString().padStart(2, '0')}`;
   periodElement.textContent = ampm;
   
-  // Formatear fecha
+  // Formatear fecha en español
   dateElement.textContent = tijuanaTime.toLocaleDateString('es-MX', {
     timeZone: 'America/Tijuana',
     weekday: 'long',
@@ -321,8 +340,8 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-  updateData();
   updateTime();
+  updateData();
   setInterval(updateTime, 1000);
   setInterval(updateData, 10000);
 });
